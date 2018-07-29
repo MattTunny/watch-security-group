@@ -11,6 +11,7 @@ ec2 = boto3.resource('ec2')
 
 # Environment Variable for Lambda
 TEAM_WEBHOOK = os.environ['TEAM_WEBHOOK']
+SLACK_WEBHOOK = os.environ['SLACK_WEBHOOK']
 
 def get_security_group(event):
 
@@ -98,14 +99,17 @@ def lookup_security_group(event, source_port, cidr_address, description):
             message_color = "FF0000"
 
         # Send Teams Message
-        create_json_message(TEAM_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color)
+        teams_message(TEAM_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color)
+
+        # Send Slack Message
+        slack_message(SLACK_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color)
 
     except Exception as error:
         print("Error getting Security Group from Event:")
         print(f"{error}")
     
 
-def create_json_message(TEAM_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color):
+def teams_message(TEAM_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color):
     
     body = {
         "@context": "http://schema.org/extensions",
@@ -162,6 +166,65 @@ def create_json_message(TEAM_WEBHOOK, full_username, lookup_sg_id, lookup_sg_nam
 
     return response
     
+def slack_message(SLACK_WEBHOOK, full_username, lookup_sg_id, lookup_sg_name, lookup_sg_description, aws_account, source_port, cidr_address, description, event_type, message_color):
+
+    body = {
+        "attachments": [
+            {
+                "pretext": f"Security group *{lookup_sg_id}* has been modified and trigger this alert",
+                "text": "Security group has been changed...",
+                "color": f"{message_color}",
+                "fields": [
+                    {
+                        "title": "User",
+                        "value": f"{full_username}",
+                        "short": False
+                    },
+                    {
+                        "title": "Action",
+                        "value": f"{event_type}",
+                        "short": True
+                    },
+                    {
+                        "title": "Account",
+                        "value": f"{aws_account}",
+                        "short": True
+                    },
+                    {
+                        "title": "SourcePort",
+                        "value": f"{source_port}",
+                        "short": True
+                    },
+                    {
+                        "title": "Destination",
+                        "value": f"{cidr_address}",
+                        "short": True
+                    },
+                    {
+                        "title": "SecurityGroupId",
+                        "value": f"{lookup_sg_id}",
+                        "short": True
+                    },
+                    {
+                        "title": "Description",
+                        "value": f"{lookup_sg_description}",
+                        "short": True
+                    },
+                    {
+                        "title": "Rule Description",
+                        "value": f"{description}",
+                        "short": True
+                    }
+
+                ]
+            }
+        ]
+    }
+
+    response = requests.post(SLACK_WEBHOOK, data=json.dumps(body))
+    print(f'response from Slack: {response}')
+
+    return response
 
 def lambda_handler(event, context):
     get_security_group(event)

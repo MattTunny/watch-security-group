@@ -1,13 +1,16 @@
-# Security Group Watcher for Microsoft Teams
+# Security Group Watcher for MS Teams/Slack
  
 I work for @AWSCloud & my opinions are my own.
 
 
 # Basic Intro
-SAM package for creating a cloudwatch event when ever someone modifies a security group and posts into MS Teams in near real time. (can replace teams for slack in last function).
-This is a simple example however you could modify the lambda to take action on rules you don't want allowed in your organisation.
+SAM package for creating a cloudwatch event whenever someone modifies a security group and posts into MS Teams/Slack in near real time.<br>
+This is a simple example that posts the event. You might be asking isn't this the same as sending alerts to email?
+Correct, however it's what you do after the event has triggered where it becomes much more powerful then email.<br>
+You could add features like:
 
-<br>
+- Only alarm when certain risky ports/ranges/vpc's are entered (22,3389 to 0.0.0.0/0 etc)
+- Create policy’s that enforce these rules automatically, enabling teams to move faster while still having visibility into what they are doing.
 
 # Requirements
 
@@ -27,6 +30,9 @@ This is a simple example however you could modify the lambda to take action on r
 
 - Inside Teams:
 ![](https://github.com/MattTunny/watch-security-group/blob/master/pictures/alert-2.png)
+
+- Inside Slack:
+![](https://github.com/MattTunny/watch-security-group/blob/master/pictures/alert-slack.png)
 
 # Install Steps:
 

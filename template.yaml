@@ -7,7 +7,7 @@
   # sam local invoke -e events/event_iam.json WatchSecurityGroupFunction -n vars.json
 
 Transform: AWS::Serverless-2016-10-31
-Description: Lambda function to watch EC2 Security Group Events to Send to Teams
+Description: Lambda function to watch EC2 Security Group Events to Send to Teams/Slack
 
 Parameters:
 
@@ -15,6 +15,11 @@ Parameters:
     Description: MS Teams Webhook
     Type: String
     Default: https://outlook.office.com/webhook/your/webhook/etc
+
+  WebHookSlack:
+    Description: Slack Webhook
+    Type: String
+    Default: https://hooks.slack.com/services/your/webhook/slack
 
 Resources:
 
@@ -28,7 +33,7 @@ Resources:
       MemorySize: 128
       Runtime: python3.6
       CodeUri: ./source/
-      Description: Detects EC2 Security Group Events to Send to Teams
+      Description: Detects EC2 Security Group Events to Send to Teams/Slack
       Policies:
         - AWSLambdaVPCAccessExecutionRole
         - CloudWatchLogsFullAccess
@@ -43,7 +48,7 @@ Resources:
       Events:
         WatchSecurityGroupRule:
           Type: CloudWatchEvent
-          Description: Detects EC2 Security Group Events to Send to Teams
+          Description: Detects EC2 Security Group Events to Send to Teams/Slack
           Properties:
             Pattern:
               source:
@@ -59,4 +64,5 @@ Resources:
       Environment:
         Variables:
           TEAM_WEBHOOK: !Ref WebHook
+          SLACK_WEBHOOK: !Ref WebHookSlack
   

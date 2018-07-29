@@ -1,5 +1,6 @@
 {
     "WatchSecurityGroupFunction": {
-        "TEAM_WEBHOOK": "https://outlook.office.com/webhook/your/webhook/etc"
+        "TEAM_WEBHOOK": "https://outlook.office.com/webhook/your/webhook/etc",
+        "SLACK_WEBHOOK": "https://hooks.slack.com/services/your/webhook/etc"
     }
 }
