@@ -23,9 +23,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: watch-security-group.lambda_handler
-      Timeout: 25
+      Timeout: 10
       Tracing: Active
-      MemorySize: 256
+      MemorySize: 128
       Runtime: python3.6
       CodeUri: ./source/
       Description: Detects EC2 Security Group Events to Send to Teams
